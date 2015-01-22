@@ -1,3 +1,4 @@
+/*
 package servlet;
 
 import org.apache.log4j.Logger;
@@ -49,3 +50,4 @@ public class ErrorHandler extends HttpServlet {
         doGet(req, resp);
     }
 }
+*/

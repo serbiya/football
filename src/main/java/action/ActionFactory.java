@@ -7,20 +7,19 @@ import java.util.Map;
 
 public class ActionFactory {
     private static final Logger LOGGER = Logger.getLogger(ActionFactory.class);
-    private Map<String, Action> actions;
+    private static Map<String, Action> actions = new HashMap<String, Action>();
 
-    public ActionFactory() {
-        actions = new HashMap<String, Action>();
-        actions.put("register", new RegistrationAction());
-        actions.put("toError", new ToErrorAction());
-        actions.put("toRegister", new ToRegistrationPageAction());
-        //actions.put("login", new LoginAction());
+    static {
+        actions.put("GET/home", new ShowPageAction("main.jsp"));
+        actions.put("GET/register", new ShowPageAction("register.jsp"));
+        actions.put("POST/login", new LoginAction());
+        actions.put("POST/register", new RegistrationAction());
     }
 
-    public Action getAction(String actionName) {
+    public static Action getAction(String actionName) {
         if (!actions.containsKey(actionName)) {
-            LOGGER.debug("No action: " + actionName);
-            return actions.get("toError");
+            LOGGER.info("There is no action: " + actionName);
+            return actions.get("toError");//todo
         }
         return actions.get(actionName);
     }

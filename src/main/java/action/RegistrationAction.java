@@ -13,41 +13,40 @@ public class RegistrationAction implements Action {
 
     @Override
     public ActionResult execute(HttpServletRequest req, HttpServletResponse resp) {
-        LOGGER.debug("RegistrationAction started");
+        LOGGER.info("Start RegistrationAction");
         UserDAO userDAO = new UserDAO();
 
         String login = req.getParameter("login");
         String password = req.getParameter("password");
 
-        User userInBase = null;
-        try {
-            userInBase = userDAO.findUserByLogin(login);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-        }
+        if (null == login || null == password){} //todo error page or smth
 
-        User user = new User();
-
-        HttpSession session = req.getSession();
-        if (userInBase != null) {
-            req.setAttribute("sameLogin", "login.error.message");
-            LOGGER.debug("loginErrorMessage");
+        if (userDAO.isUserRegistered(login)) {
+            //req.setAttribute("sameLogin", "login.error.message");//todo
+            LOGGER.error("Login is not unique");
             return new ActionResult("register.jsp");
         } else {
-            try {
-                user.setLogin(login);
-                user.setPassword(password);
-                user.setRole(password);
+            User user = new User();
+            HttpSession session = req.getSession();
 
+                user.setLogin(login);
+                //todo Пока данных полей на ui нет. Добавить и раскомментить
+//                user.setName(req.getParameter("name"));
+//                user.setLastName(req.getParameter("lastName"));
+//                user.setEmail(req.getParameter("email"));
+                user.setPassword(req.getParameter(password));
+//                user.setRoleID(Integer.valueOf(req.getParameter("roleID")));
+                user.setActive(true);
                 userDAO.create(user);
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage());
-            }
-            session.setAttribute("successfulMessage", "successful.registration.message");
-            session.setAttribute("user", user);
-            LOGGER.debug("New user - " + user);
+
+            //todo Позже добавить параметр  jsp и расскомментить
+            /*session.setAttribute("successfulMessage", "successful.registration.message");
+            session.setAttribute("user", user);*/
+            LOGGER.info("New user - " + login);
         }
-        LOGGER.debug("Registration has finished");
-        return new ActionResult("ok.jsp");
+
+        LOGGER.info("Finish RegistrationAction");
+        return new ActionResult("ok.jsp");//todo Изменить на нормальную страницу, либо в ok.jsp принимать параметр с текстом + сделать ссылку на главную
+        //return new ActionResult("main.jsp");
     }
 }

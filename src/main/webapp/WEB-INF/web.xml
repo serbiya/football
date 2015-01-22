@@ -3,34 +3,4 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 	      http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
-
-    <welcome-file-list>
-        <welcome-file>register.jsp</welcome-file>
-    </welcome-file-list>
-
-    <servlet>
-        <servlet-name>controller</servlet-name>
-        <servlet-class>servlet.Controller</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>controller</servlet-name>
-        <url-pattern>/controller</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>ErrorHandler</servlet-name>
-        <servlet-class>servlet.ErrorHandler</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ErrorHandler</servlet-name>
-        <url-pattern>/ErrorHandler</url-pattern>
-    </servlet-mapping>
-    <error-page>
-        <error-code>404</error-code>
-        <location>/error.jsp</location>
-    </error-page>
-    <error-page>
-        <exception-type>java.lang.Throwable</exception-type>
-        <location>/ErrorHandler</location>
-    </error-page>
 </web-app>

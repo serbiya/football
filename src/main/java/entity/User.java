@@ -4,15 +4,11 @@ public class User extends Entity {
 
     private String login;
     private String password;
-    private String role;
     private String name;
-    private String lastname;
+    private String lastName;
     private String email;
-    private Integer role_ID;
-    private Boolean active;
-
-
-
+    private int roleID;
+    private boolean isActive;
 
     public String getLogin() {
         return login;
@@ -30,11 +26,43 @@ public class User extends Entity {
         this.password = password;
     }
 
-    public String getRole() {
-        return role;
+    public int getRoleID() {
+        return roleID;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setRoleID(int roleID) {
+        this.roleID = roleID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
     }
 }
