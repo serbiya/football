@@ -1,10 +1,10 @@
 package util;
 
 import org.aeonbits.owner.Config;
+import org.aeonbits.owner.Config.Sources;
 
-@Config.LoadPolicy(Config.LoadType.MERGE)
-@Config.Sources({"file:src/test/resources/Property.properties"})
-public abstract interface Property extends Config {
+@Sources("file:src/main/resources/Property.properties")
+public interface Property extends Config {
 
     String driverName();
 
@@ -14,9 +14,9 @@ public abstract interface Property extends Config {
 
     String passDB();
 
-    Integer max_waiting_time();
+    int max_waiting_time();
 
-    Integer pool_size();
+    int pool_size();
 
 }
 

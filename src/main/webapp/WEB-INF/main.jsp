@@ -23,13 +23,7 @@
 
         <form id="register" name="register" method="get" action="${pageContext.request.contextPath}/do/register">
             <h1>Register</h1>
-            <%--<input type="hidden" name="action" value="toRegistrate">--%>
-            <%--<ul>--%>
-            <%--<li>--%>
-            <button <%--class="submit"--%> type="submit" <%--style="margin-left: 205"--%>>
-                Register<%--<fmt:message key="main_page.registration"/>--%></button>
-            <%--</li>--%>
-            <%--</ul>--%>
+            <button type="submit" > </button>
         </form>
     </div>
 </center>

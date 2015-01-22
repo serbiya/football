@@ -19,7 +19,7 @@ public class UserDAO {
         try {
             pool = ConnectionPool.getInstance();
             connection = pool.takeConnection();
-            st = connection.prepareStatement("insert into user values (default, ?, ?, ?, ?, ?, ?, ?)");
+            st = connection.prepareStatement("insert into users values (default, ?, ?, ?, ?, ?, ?, ?)");
             st.setString(1, user.getLogin());
             st.setString(2, user.getName());
             st.setString(3, user.getLastName());
@@ -51,7 +51,7 @@ public class UserDAO {
         try {
             pool = ConnectionPool.getInstance();
             connection = pool.takeConnection();
-            st = connection.prepareStatement("SELECT * FROM user where (login = ? and active = true)");
+            st = connection.prepareStatement("SELECT * FROM users where (login = ? and active = true)");
             st.setString(1, login);
             resultSet = st.executeQuery();
             while (resultSet.next()) {
@@ -85,7 +85,7 @@ public class UserDAO {
         try {
             pool = ConnectionPool.getInstance();
             connection = pool.takeConnection();
-            st = connection.prepareStatement("SELECT COUNT (id) FROM user where (login = ?)");
+            st = connection.prepareStatement("SELECT COUNT (id) FROM users where (login = ?)");
             st.setString(1, login);
             resultSet = st.executeQuery();
             resultSet.next();

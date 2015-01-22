@@ -38,7 +38,6 @@ public class Controller extends HttpServlet {
         else forward(actionResult, req, resp);
         LOGGER.info("Controller provides: " + (actionResult.isRedirect() ? "redirecting" : "forwarding"));
 
-        //todo what is that?
         /*RequestDispatcher dispatcher = req.getRequestDispatcher(actionResult.getView());
         dispatcher.forward(req, resp);*/
 
