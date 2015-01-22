@@ -1,10 +1,9 @@
 package connection;
 
-import org.aeonbits.owner.ConfigFactory;
 import org.apache.log4j.Logger;
-import util.Property;
 
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -15,63 +14,61 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ConnectionPool {
-    private static final Logger LOGGER = Logger.getLogger(ConnectionPool.class);
     private static ConnectionPool instance;
-    private static Lock lock = new ReentrantLock(true);
+    private String DRIVER_NAME;
     private BlockingQueue<Connection> connectionQueue;
+    private String URL;
+    private String user;
+    private String password;
+    private int maxConn;
 
-    private ConnectionPool() {
-        init();
+    private static final Logger LOGGER = Logger.getLogger(ConnectionPool.class);
+    private static Lock lock = new ReentrantLock(true);
+
+    private ConnectionPool(String driverName, String url, String user, String password, int maxConn) {
+        this.DRIVER_NAME = driverName;
+        this.URL = url;
+        this.user = user;
+        this.password = password;
+        this.maxConn = maxConn;
+        initDriver();
     }
 
-    public static ConnectionPool getInstance() {
+    private void initDriver() {
+        connectionQueue = new LinkedBlockingDeque<>(maxConn);
+        try {
+            Driver driver = (Driver) Class.forName(DRIVER_NAME).newInstance();
+            DriverManager.registerDriver(driver);
+            for (int i = 0; i < maxConn; i++) {
+                Connection connection = DriverManager.getConnection(URL, user, password);
+                connectionQueue.add(connection);
+            }
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    static synchronized public ConnectionPool getInstance(String driverName, String url, String user, String password,
+                                                          int maxConn) {
         lock.lock();
         if (instance == null) {
-            instance = new ConnectionPool();
+            instance = new ConnectionPool(driverName, url, user, password, maxConn);
         }
         lock.unlock();
         return instance;
     }
 
-    private final void init() {
-        LOGGER.debug("ConnectionPool init() started");
-
-        //Property cfg = ConfigFactory.create(Property.class);
-
-        String driver = "org.h2.Driver";
-        String url = "jdbc:h2:test";
-        String user = "sa";
-        String password = "";
-        int poolSize = 10;
-
-        //todo - раскомментировать. Сейчас - Null'ы
-        /*String driver = cfg.driverName();
-        String url = cfg.pathToDB();
-        String user = cfg.login();
-        String password = cfg.passDB();
-        int poolSize = cfg.pool_size();*/
-
-        connectionQueue = new LinkedBlockingDeque<>(poolSize);
-
-        try {
-            Class.forName(driver);
-            for (int i = 0; i < poolSize; i++) {
-                Connection connection = DriverManager.getConnection(url, user, password);
-                connectionQueue.add(connection);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("SQLException");
-        } catch (ClassNotFoundException e) {
-            LOGGER.error("ClassNotFoundException");
-        }
-
-        LOGGER.debug("ConnectionPool init() finished");
-    }
-
     public Connection takeConnection() {
         //Property cfg = ConfigFactory.create(Property.class);//todo
         try {
-            Connection connection = connectionQueue.poll(/*cfg.max_waiting_time()*/3, TimeUnit.SECONDS);//todo
+            Connection connection = connectionQueue.poll(/*cfg.max_waiting_time()*/5, TimeUnit.SECONDS);//todo
             if (connection == null) {
                 LOGGER.debug("Connection is NULL ");
             }
@@ -80,6 +77,21 @@ public class ConnectionPool {
             LOGGER.error("InterruptedException");
             return null;
         }
+    }
+
+    private Connection newConnection() {
+        Connection con;
+        try {
+            if (user == null) {
+                con = DriverManager.getConnection(URL);
+            } else {
+                con = DriverManager.getConnection(URL,
+                        user, password);
+            }
+        } catch (SQLException e) {
+            return null;
+        }
+        return con;
     }
 
     public void releaseConnection(Connection connection) {

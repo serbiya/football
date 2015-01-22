@@ -7,7 +7,7 @@ public class LoginAction implements Action {
 
     @Override
     public ActionResult execute(HttpServletRequest req, HttpServletResponse resp) {
-        return new ActionResult("notReady.jsp", true);
+        return new ActionResult("notReady.jsp", false);
     }
 
 }

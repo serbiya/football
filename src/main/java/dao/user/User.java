@@ -1,4 +1,6 @@
-package entity;
+package dao.user;
+
+import entity.Entity;
 
 public class User extends Entity {
 

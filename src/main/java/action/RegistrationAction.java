@@ -1,7 +1,8 @@
 package action;
 
-import dao.UserDAO;
-import entity.User;
+import dao.factory.DAOFactory;
+import dao.user.UserDAO;
+import dao.user.User;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +15,8 @@ public class RegistrationAction implements Action {
     @Override
     public ActionResult execute(HttpServletRequest req, HttpServletResponse resp) {
         LOGGER.info("Start RegistrationAction");
-        UserDAO userDAO = new UserDAO();
+        DAOFactory daoFactory = new DAOFactory();
+        UserDAO userDAO = daoFactory.getUserDAO();
 
         String login = req.getParameter("login");
         String password = req.getParameter("password");

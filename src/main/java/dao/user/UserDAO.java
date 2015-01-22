@@ -1,34 +1,36 @@
-package dao;
+package dao.user;
 
-import connection.ConnectionPool;
-import entity.User;
+import dao.factory.DAOFactory;
 import org.apache.log4j.Logger;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class UserDAO {
     private static final Logger LOGGER = Logger.getLogger(UserDAO.class);
+    public Connection connection = null;
 
+    public UserDAO (Connection connection) {
+        this.connection = connection;
+    }
 
     public void create(User user) {
         LOGGER.info("Start inserting new user");
 
-        ConnectionPool pool;
-        PreparedStatement st;
-        Connection connection;
+        PreparedStatement statement;
         try {
-            pool = ConnectionPool.getInstance();
-            connection = pool.takeConnection();
-            st = connection.prepareStatement("insert into users values (default, ?, ?, ?, ?, ?, ?, ?)");
-            st.setString(1, user.getLogin());
-            st.setString(2, user.getName());
-            st.setString(3, user.getLastName());
-            st.setString(4, user.getEmail());
-            st.setString(5, user.getPassword());
-            st.setInt(6, user.getRoleID());
-            st.setBoolean(7, user.isActive());
-            st.executeUpdate();
-            st.close();
+            statement = connection.prepareStatement("insert into USERS values (default, ?, ?, ?, ?, ?, ?, ?)");
+            statement.setString(1, user.getLogin());
+            statement.setString(2, user.getName());
+            statement.setString(3, user.getLastName());
+            statement.setString(4, user.getEmail());
+            statement.setString(5, user.getPassword());
+            statement.setInt(6, user.getRoleID());
+            statement.setBoolean(7, user.isActive());
+            statement.executeUpdate();
+            statement.close();
         } catch (SQLException e) {
             LOGGER.error("Creating new user has failed: " + e.getMessage());
         }
@@ -43,17 +45,13 @@ public class UserDAO {
     public User findUserByLogin(String login) {
         LOGGER.info("Start findUserByLogin: " + login);
 
-        ConnectionPool pool;
         User user = null;
-        PreparedStatement st;
+        PreparedStatement statement;
         ResultSet resultSet;
-        Connection connection;
         try {
-            pool = ConnectionPool.getInstance();
-            connection = pool.takeConnection();
-            st = connection.prepareStatement("SELECT * FROM users where (login = ? and active = true)");
-            st.setString(1, login);
-            resultSet = st.executeQuery();
+            statement = connection.prepareStatement("SELECT * FROM USERS where (login = ? and active = true)");
+            statement.setString(1, login);
+            resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 user = new User();
                 user.setLogin(resultSet.getString("LOGIN"));
@@ -65,7 +63,7 @@ public class UserDAO {
                 user.setActive(resultSet.getBoolean("ACTIVE"));
             }
             resultSet.close();
-            st.close();
+            statement.close();
         } catch (Exception e) {
             LOGGER.error("findUserByLogin has failed: " + e.getMessage());
         }
@@ -77,21 +75,17 @@ public class UserDAO {
     public boolean isUserRegistered(String login) {
         LOGGER.info("Start isUserRegistered: " + login);
 
-        ConnectionPool pool;
-        PreparedStatement st;
+        PreparedStatement statement;
         ResultSet resultSet;
-        Connection connection;
         boolean result = false;
         try {
-            pool = ConnectionPool.getInstance();
-            connection = pool.takeConnection();
-            st = connection.prepareStatement("SELECT COUNT (id) FROM users where (login = ?)");
-            st.setString(1, login);
-            resultSet = st.executeQuery();
+            statement = connection.prepareStatement("SELECT COUNT (ID) FROM USERS WHERE LOGIN = '" + login + "')");
+            //statement.setString(1, login);
+            resultSet = statement.executeQuery();
             resultSet.next();
             result = resultSet.getInt(1) != 0;
             resultSet.close();
-            st.close();
+            statement.close();
         } catch (Exception e) {
             LOGGER.error("isUserRegistered has failed: " + e.getMessage());
         }
